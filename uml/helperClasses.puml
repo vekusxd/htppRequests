@@ -1,0 +1,77 @@
+@startuml HelperClasses
+
+
+class PeopleList{
+    --Properties--
+    + People : List<People> 
+    --Methods--
+    + Append(people: People) : void
+    + PeopleList()
+    + displayAll() : void
+    + saveAll() : void
+}
+
+class People{
+    --Properties--
+    + Number : string
+    + Operator : string
+    + Initials : string
+    + INN : string
+    + Country : string
+    + Gender : string
+    --Methods--
+    + {method} ToString() : string
+    + saveToFile() : void 
+}
+
+
+
+PeopleList o-- People
+
+People <.. PrettyName : Получает имя\nи пол
+People <.. NumberInfo : Получает телефон\nОператора и страну
+People <.. InnInfo : Получает ИНН
+
+class Request{
+    --Properties--
+    + Query : string
+}
+
+class PrettyName{
+    --Properties--
+    + Result : string
+    + Gender : string
+}
+
+class NumberInfo{
+    --Properties--
+    + Phone : string
+    + Provider : string
+    + Country : string
+}
+
+class InnInfo{
+    --Properties--
+    + Suggestions : List<Suggestions>
+}
+
+class Suggestions{
+    --Properties--
+    + Data : Data
+}
+
+class Data{
+    --Properties--
+    + Management : Management
+}
+
+class Management{
+    --Properties--
+    + Name : string
+}
+
+InnInfo o-- Suggestions
+Suggestions o-- Data
+Data o-- Management
+
+@enduml
