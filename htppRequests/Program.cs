@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using Dadata.Model;
+using System.ComponentModel.DataAnnotations;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -10,6 +12,7 @@ namespace htppRequests
     {
         static HttpClient httpClient = new HttpClient();
 
+
         static async Task Main(string[] args)
         {
             try
@@ -18,58 +21,82 @@ namespace htppRequests
 
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Token 9545f999ad7543f4b4ab67a5932b881f71877b25");
                 httpClient.DefaultRequestHeaders.Add("X-Secret", "b54b9183bd8177902650b63c1cc05356da696643");
-                //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-               // httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
+                int choice;
+
+                PeopleList peopleList = new PeopleList();
+                while (true)
+                {
+                    Console.WriteLine("---Поиск информации о человеке---");
+                    Console.WriteLine("1 - добавить человека");
+                    Console.WriteLine("2 - отобразить список людей");
+                    Console.WriteLine("3 - выйти и сохранить результат");
+                    Console.Write("Ваш выбор: ");
+                    choice = Convert.ToInt32(Console.ReadLine());
+                    switch(choice)
+                    {
+                        case 1:
+                            People personToAdd = new People(); Console.WriteLine("Введите номер");
+                            string n = Console.ReadLine();
+
+                            string[] number = { n };
+
+                            var numberResponce = await httpClient.PostAsJsonAsync("https://cleaner.dadata.ru/api/v1/clean/phone", number);
 
 
-                string[] number = { "89375226311" };
+                            var numberResult = await numberResponce.Content.ReadFromJsonAsync<List<NumberInfo>>();
 
-                string sNumber = "89375226311";
 
-                string query = JsonSerializer.Serialize(number);
+                            foreach (var item in numberResult)
+                            {
+                                personToAdd.Number = item.Phone;
+                                personToAdd.Country = item.Country;
+                                personToAdd.Operator = item.Provider;
+                            }
 
-                string Squery = JsonSerializer.Serialize(sNumber);
 
-                Dictionary<string, string[]> dictQuery = new Dictionary<string, string[]>();
-                dictQuery["phone"] = number;
+                            Console.WriteLine("Введите инн");
+                            string inn = Console.ReadLine();
+                            var response = await httpClient.PostAsJsonAsync("http://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party", new Request { Query = inn });
 
-                string serialized = JsonSerializer.Serialize(dictQuery);
+                            personToAdd.INN = inn;
 
-                //  Console.WriteLine(query);
+                            var result = await response.Content.ReadFromJsonAsync<InnInfo>();
 
-                //  Console.WriteLine(Squery);
 
-                //   Console.WriteLine(serialized);
 
-                var response = await httpClient.PostAsJsonAsync("https://cleaner.dadata.ru/api/v1/clean/phone",number);
+                            string[] names = { result.Suggestions[0].Data.Management.Name };
 
-                //   Console.WriteLine(response);
-                //  Console.WriteLine(response.RequestMessage);
-                //  Console.WriteLine(response);
+                            var response2 = await httpClient.PostAsJsonAsync("https://cleaner.dadata.ru/api/v1/clean/name", names);
 
-                var message = await response.Content.ReadAsStringAsync();
+                            var resul2t = await response2.Content.ReadFromJsonAsync<List<PrettyName>>();
 
-                Console.WriteLine(response);
-                Console.WriteLine(message);
+                            foreach (var item in resul2t)
+                            {
+                                personToAdd.Initials = item.Result;
+                                personToAdd.Gender = item.Gender;
+                            }
 
-                //var response = await httpClient.GetFromJsonAsync("https://htmlweb.ru/json/mnp/phone/79375226311", );
+                            peopleList.append(personToAdd);
+                            break;
+                        case 2:
+                            peopleList.displayAll();
+                            break;
+                        case 3:
+                            peopleList.saveAll();
+                            return;
+                        default:
+                            Console.WriteLine("Введите некорректный запрос!");
+                            break;
+                    }
+                }
 
-                // var responce = await httpClient.GetAsync("https://htmlweb.ru/json/mnp/phone/79375226311?api_key=a1558f2d5fcb40e583377ca96255998a");
-                // object? data  = await httpClient.GetFromJsonAsync<PhoneInfo>("https://htmlweb.ru/json/mnp/phone/79375226311?api_key=a1558f2d5fcb40e583377ca96255998a");
 
-                //  if(data is PhoneInfo phone)
-                //  {
-                //       Console.WriteLine(phone);
-                //   }
-
-                //   Console.WriteLine();
-                //
-            }
+             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
         }
-
     }
 }
+
