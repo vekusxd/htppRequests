@@ -18,8 +18,8 @@ namespace htppRequests
 
                 httpClient.DefaultRequestHeaders.Add("Authorization", "Token 9545f999ad7543f4b4ab67a5932b881f71877b25");
                 httpClient.DefaultRequestHeaders.Add("X-Secret", "b54b9183bd8177902650b63c1cc05356da696643");
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
+                //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
+               // httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "application/json");
 
 
                 string[] number = { "89375226311" };
@@ -41,7 +41,7 @@ namespace htppRequests
 
                 //   Console.WriteLine(serialized);
 
-                var response = await httpClient.PostAsJsonAsync("https://cleaner.dadata.ru/api/v1/clean/phone","[ \"раб 846)231.60.14 * 139\" ]");
+                var response = await httpClient.PostAsJsonAsync("https://cleaner.dadata.ru/api/v1/clean/phone",number);
 
                 //   Console.WriteLine(response);
                 //  Console.WriteLine(response.RequestMessage);
