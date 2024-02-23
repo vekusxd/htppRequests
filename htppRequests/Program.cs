@@ -40,12 +40,9 @@ namespace htppRequests
                             
                             People personToAdd = new People();
 
-
+                            //оператор и номер
                             string[] number = { n };
-
                             var numberResponce = await httpClient.PostAsJsonAsync("https://cleaner.dadata.ru/api/v1/clean/phone", number);
-
-
                             var numberResult = await numberResponce.Content.ReadFromJsonAsync<List<NumberInfo>>();
 
 
@@ -56,21 +53,18 @@ namespace htppRequests
                                 personToAdd.Operator = item.Provider;
                             }
 
-
+                            //инициалы по ИНН
                             Console.WriteLine("Введите инн");
                             string inn = Console.ReadLine();
                             var response = await httpClient.PostAsJsonAsync("http://suggestions.dadata.ru/suggestions/api/4_1/rs/findById/party", new Request { Query = inn });
 
                             personToAdd.INN = inn;
-
                             var result = await response.Content.ReadFromJsonAsync<InnInfo>();
 
 
-
+                            //Имя в правильном формате и пол человека
                             string[] names = { result.Suggestions[0].Data.Management.Name };
-
                             var response2 = await httpClient.PostAsJsonAsync("https://cleaner.dadata.ru/api/v1/clean/name", names);
-
                             var resul2t = await response2.Content.ReadFromJsonAsync<List<PrettyName>>();
 
                             foreach (var item in resul2t)
@@ -88,7 +82,7 @@ namespace htppRequests
                             peopleList.saveAll();
                             return;
                         default:
-                            Console.WriteLine("Введите некорректный запрос!");
+                            Console.WriteLine("Введите корректный запрос!");
                             break;
                     }
                 }
