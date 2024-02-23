@@ -35,8 +35,11 @@ namespace htppRequests
                     switch(choice)
                     {
                         case 1:
-                            People personToAdd = new People(); Console.WriteLine("Введите номер");
+                            Console.WriteLine("Введите номер");
                             string n = Console.ReadLine();
+                            
+                            People personToAdd = new People();
+
 
                             string[] number = { n };
 

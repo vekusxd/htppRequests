@@ -16,6 +16,11 @@ namespace htppRequests
             this.People.Add(people);
         }
 
+        public PeopleList()
+        {
+            People = new List<People>();
+        }
+
         public void displayAll()
         {
             foreach(var item in People)
